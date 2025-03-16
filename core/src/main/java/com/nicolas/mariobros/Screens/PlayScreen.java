@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -24,6 +27,9 @@ public class PlayScreen implements Screen {
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
 
+    private World world;
+    private Box2DDebugRenderer b2dr;
+
     public PlayScreen(MarioBros game){
         this.game = game;
 
@@ -38,6 +44,9 @@ public class PlayScreen implements Screen {
 
         gameCam.position.set(gameViewport.getWorldWidth()/2,
             gameViewport.getWorldHeight() / 2, 0);
+
+        world = new World(new Vector2(0,0), true);
+        b2dr = new Box2DDebugRenderer();
     }
 
     @Override
