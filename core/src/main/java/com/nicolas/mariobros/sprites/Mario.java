@@ -43,6 +43,7 @@ public class Mario extends Sprite {
         }
         marioRun = new Animation<>(0.1f, frames);
         frames.clear();
+
         for (int i = 4; i < 6; i++){
             frames.add(new TextureRegion(getTexture(), i * 16, 11, 16, 16));
         }
@@ -63,8 +64,49 @@ public class Mario extends Sprite {
     }
 
     public TextureRegion getFrame(float delta){
-        //TODO
-        return null;
+        currentState = getState();
+        TextureRegion region;
+        switch(currentState){
+            case JUMPING:
+                region = marioJump.getKeyFrame(stateTimer);
+                break;
+            case RUNNING:
+                region = marioRun.getKeyFrame(stateTimer, true);
+                break;
+            case FALLING:
+            case STANDING:
+            default:
+                region = marioStand;
+                break;
+        }
+
+        if ((b2body.getLinearVelocity().x < 0 || !runningRight) && !region.isFlipX()){
+            region.flip(true, false);
+            runningRight = false;
+        } else if ((b2body.getLinearVelocity().x > 0 || runningRight) && region.isFlipX()) {
+            region.flip(true, false);
+            runningRight = true;
+        }
+
+        stateTimer = currentState == previousState ? stateTimer + delta : 0;
+        previousState = currentState;
+
+        return region;
+    }
+
+    public State getState(){
+        if(b2body.getLinearVelocity().y > 0 ||
+            b2body.getLinearVelocity().y < 0 && previousState == State.JUMPING){
+            return State.JUMPING;
+        }
+        else if (b2body.getLinearVelocity().y < 0){
+            return State.FALLING;
+        } else if (b2body.getLinearVelocity().x != 0) {
+            return State.RUNNING;
+        }
+        else {
+            return State.STANDING;
+        }
     }
 
     private void defineMario(){
